@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:fov_fall2024_headchef_tablet_app/app/repositories/order_repository.dart'; // Import your repository
 
 class ItemCard extends StatelessWidget {
-  final String orderNo;
+  final String orderId;
+  final String orderDetailsId;
   final DateTime dateTime;
-  final String tableNo;
-  final String priority;
   final String orderedItem;
 
   ItemCard({
-    required this.orderNo,
+    required this.orderId,
+    required this.orderDetailsId,
     required this.dateTime,
-    required this.tableNo,
-    required this.priority,
     required this.orderedItem,
   });
+
+  // Create an instance of the OrderRepository to access confirmOrder method
+  final orderRepository = OrderRepository();
 
   @override
   Widget build(BuildContext context) {
@@ -31,67 +33,68 @@ class ItemCard extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Order number'),
+                    Text('Order number', style: TextStyle(fontSize: 24)),
                     Text(
-                      orderNo,
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      orderDetailsId,
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 28),
                     ),
                   ],
                 ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Date and time'),
+                    Text('Date and time', style: TextStyle(fontSize: 24)),
                     Text(
                       DateFormat('dd/MM/yyyy HH:mm').format(dateTime),
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Table number'),
-                    Text(
-                      tableNo,
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Priority'),
-                    Text(
-                      priority,
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: cardColorByPriority(priority)),
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 28),
                     ),
                   ],
                 ),
               ],
             ),
             Divider(),
-            // Second row
-            Text(
-              'Ordered item: $orderedItem',
-              style: TextStyle(fontSize: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Text(
+                  'Ordered item: ',
+                  style: TextStyle(fontSize: 24),
+                ),
+                Text(
+                  orderedItem,
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
+                ),
+              ],
             ),
-            // Third row
             Align(
               alignment: Alignment.bottomRight,
               child: ElevatedButton(
                 style: ButtonStyle(
-                    backgroundColor:
-                        MaterialStatePropertyAll<Color>(Colors.green)),
-                onPressed: () {
-                  // Accept action here
-                  print("Accepted $orderNo");
+                  backgroundColor: WidgetStateProperty.all<Color>(Colors.green),
+                ),
+                onPressed: () async {
+                  // Call confirmOrder when the button is pressed
+                  try {
+                    final result = await orderRepository.confirmOrder(
+                        orderId, orderDetailsId);
+                    // Handle the result (e.g., show a success message)
+                    print("Order confirmed: $result");
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Order confirmed successfully')),
+                    );
+                  } catch (e) {
+                    // Handle error
+                    print("Error confirming order: $e");
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Failed to confirm order.')),
+                    );
+                  }
                 },
                 child: Text(
-                  'Accept',
-                  style: TextStyle(color: Colors.white),
+                  'Served',
+                  style: TextStyle(fontSize: 30, color: Colors.white),
                 ),
               ),
             ),
