@@ -4,7 +4,7 @@ import 'package:fov_fall2024_headchef_tablet_app/app/services/signalr_service.da
 
 void main() {
   final signalRService = SignalRService();
-  runApp(MainApp(signalRService: signalRService)); // Remove `const` here
+  runApp(MainApp(signalRService: signalRService));
 }
 
 class MainApp extends StatelessWidget {

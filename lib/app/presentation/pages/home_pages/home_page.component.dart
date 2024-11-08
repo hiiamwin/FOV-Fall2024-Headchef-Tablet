@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:fov_fall2024_headchef_tablet_app/app/repositories/order_repository.dart'; // Import your repository
 
-class ItemCard extends StatelessWidget {
+class ItemCard extends StatefulWidget {
   final String orderId;
   final String orderDetailsId;
   final DateTime dateTime;
@@ -15,8 +15,13 @@ class ItemCard extends StatelessWidget {
     required this.orderedItem,
   });
 
-  // Create an instance of the OrderRepository to access confirmOrder method
+  @override
+  _ItemCardState createState() => _ItemCardState();
+}
+
+class _ItemCardState extends State<ItemCard> {
   final orderRepository = OrderRepository();
+  bool isButtonPressed = false; // Track the button's pressed state
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +40,7 @@ class ItemCard extends StatelessWidget {
                   children: [
                     Text('Order number', style: TextStyle(fontSize: 24)),
                     Text(
-                      orderDetailsId,
+                      widget.orderDetailsId,
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 28),
                     ),
@@ -46,7 +51,7 @@ class ItemCard extends StatelessWidget {
                   children: [
                     Text('Date and time', style: TextStyle(fontSize: 24)),
                     Text(
-                      DateFormat('dd/MM/yyyy HH:mm').format(dateTime),
+                      DateFormat('dd/MM/yyyy HH:mm').format(widget.dateTime),
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 28),
                     ),
@@ -63,7 +68,7 @@ class ItemCard extends StatelessWidget {
                   style: TextStyle(fontSize: 24),
                 ),
                 Text(
-                  orderedItem,
+                  widget.orderedItem,
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
                 ),
               ],
@@ -72,26 +77,38 @@ class ItemCard extends StatelessWidget {
               alignment: Alignment.bottomRight,
               child: ElevatedButton(
                 style: ButtonStyle(
-                  backgroundColor: WidgetStateProperty.all<Color>(Colors.green),
+                  backgroundColor: MaterialStateProperty.all<Color>(
+                    isButtonPressed
+                        ? Colors.grey
+                        : Colors.green, // Change color to grey if pressed
+                  ),
                 ),
-                onPressed: () async {
-                  // Call confirmOrder when the button is pressed
-                  try {
-                    final result = await orderRepository.confirmOrder(
-                        orderId, orderDetailsId);
-                    // Handle the result (e.g., show a success message)
-                    print("Order confirmed: $result");
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Order confirmed successfully')),
-                    );
-                  } catch (e) {
-                    // Handle error
-                    print("Error confirming order: $e");
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Failed to confirm order.')),
-                    );
-                  }
-                },
+                onPressed: isButtonPressed
+                    ? null // Disable button if it's pressed
+                    : () async {
+                        setState(() {
+                          isButtonPressed = true; // Set button as pressed
+                        });
+
+                        try {
+                          final result = await orderRepository.confirmOrder(
+                            widget.orderId,
+                            widget.orderDetailsId,
+                          );
+                          // Handle the result (e.g., show a success message)
+                          print("Order confirmed: $result");
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                                content: Text('Order confirmed successfully')),
+                          );
+                        } catch (e) {
+                          // Handle error
+                          print("Error confirming order: $e");
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Failed to confirm order.')),
+                          );
+                        }
+                      },
                 child: Text(
                   'Served',
                   style: TextStyle(fontSize: 30, color: Colors.white),
