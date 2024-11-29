@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:fov_fall2024_headchef_tablet_app/app/repositories/order_repository.dart'; // Import your repository
+import 'package:fov_fall2024_headchef_tablet_app/app/repositories/order_repository.dart';
 
 class ItemCard extends StatefulWidget {
   final String orderId;
@@ -21,7 +21,22 @@ class ItemCard extends StatefulWidget {
 
 class _ItemCardState extends State<ItemCard> {
   final orderRepository = OrderRepository();
-  bool isButtonPressed = false; // Track the button's pressed state
+  bool isButtonPressed = false;
+  int? tableNumber;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchTableNumber();
+  }
+
+  Future<void> fetchTableNumber() async {
+    final fetchedTableNumber =
+        await orderRepository.getTableByOrderId(widget.orderId);
+    setState(() {
+      tableNumber = fetchedTableNumber;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,9 +53,9 @@ class _ItemCardState extends State<ItemCard> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Order number', style: TextStyle(fontSize: 24)),
+                    Text('Table number', style: TextStyle(fontSize: 24)),
                     Text(
-                      widget.orderDetailsId,
+                      tableNumber != null ? 'Table $tableNumber' : 'Loading...',
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 28),
                     ),
@@ -78,16 +93,14 @@ class _ItemCardState extends State<ItemCard> {
               child: ElevatedButton(
                 style: ButtonStyle(
                   backgroundColor: MaterialStateProperty.all<Color>(
-                    isButtonPressed
-                        ? Colors.grey
-                        : Colors.green, // Change color to grey if pressed
+                    isButtonPressed ? Colors.grey : Colors.green,
                   ),
                 ),
                 onPressed: isButtonPressed
-                    ? null // Disable button if it's pressed
+                    ? null
                     : () async {
                         setState(() {
-                          isButtonPressed = true; // Set button as pressed
+                          isButtonPressed = true;
                         });
 
                         try {
@@ -95,14 +108,12 @@ class _ItemCardState extends State<ItemCard> {
                             widget.orderId,
                             widget.orderDetailsId,
                           );
-                          // Handle the result (e.g., show a success message)
                           print("Order confirmed: $result");
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                                 content: Text('Order confirmed successfully')),
                           );
                         } catch (e) {
-                          // Handle error
                           print("Error confirming order: $e");
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text('Failed to confirm order.')),

@@ -12,7 +12,29 @@ class OrderRepository {
 
   Stream<OrderEntityResponse> get orderStream => _ordersController.stream;
 
-  // Make sure fetchOrders() returns Future<OrderEntityResponse>
+  Future<int?> getTableByOrderId(String orderId) async {
+    final url = Uri.parse("$_baseUrl?Id=$orderId");
+
+    try {
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+
+        if (data.isNotEmpty) {
+          final order = data.first;
+          return order['tableNumber'] as int?;
+        }
+      } else {
+        print("Failed to fetch data: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Error occurred while fetching table number: $e");
+    }
+
+    return null;
+  }
+
   Future<OrderEntityResponse> fetchOrders() async {
     String? restaurantId = await authRepository.getRestaurantId();
     final url = Uri.parse(
@@ -29,10 +51,8 @@ class OrderRepository {
       if (response.statusCode == 200) {
         final jsonResponse = json.decode(response.body);
         final orders = OrderEntityResponse.fromJson(jsonResponse);
-
-        // Add the response to the stream
         _ordersController.add(orders);
-        return orders; // Return the fetched orders
+        return orders;
       } else {
         throw Exception(
             'Failed to load suggested dishes: ${response.statusCode}');
@@ -47,7 +67,7 @@ class OrderRepository {
   // Confirm order cooked and transfer to waiter
   Future<String> confirmOrder(String orderId, String orderDetailsId) async {
     final url =
-        Uri.parse('$_baseUrl/$orderId/serve?OrderDetailsId=$orderDetailsId');
+        Uri.parse('$_baseUrl/$orderId/cooked?OrderDetailsId=$orderDetailsId');
     final headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ${await authRepository.getToken()}'
