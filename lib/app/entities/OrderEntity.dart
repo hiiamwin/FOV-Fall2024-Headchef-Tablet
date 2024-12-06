@@ -31,6 +31,7 @@ class OrderEntityResponse {
 class OrderEntity {
   final String orderId;
   final String id;
+  final int tableNumber;
   final String? dishName;
   final String? comboName;
   final String note;
@@ -39,6 +40,7 @@ class OrderEntity {
   OrderEntity({
     required this.orderId,
     required this.id,
+    required this.tableNumber,
     this.dishName,
     this.comboName,
     required this.note,
@@ -50,6 +52,7 @@ class OrderEntity {
     return OrderEntity(
       orderId: json['orderId'],
       id: json['id'],
+      tableNumber: json['tableNumber'],
       dishName: json['dishName'],
       comboName: json['comboName'],
       note: json['note'],

@@ -5,12 +5,14 @@ import 'package:fov_fall2024_headchef_tablet_app/app/repositories/order_reposito
 class ItemCard extends StatefulWidget {
   final String orderId;
   final String orderDetailsId;
+  final int tableNumber;
   final DateTime dateTime;
   final String orderedItem;
 
   ItemCard({
     required this.orderId,
     required this.orderDetailsId,
+    required this.tableNumber,
     required this.dateTime,
     required this.orderedItem,
   });
@@ -22,20 +24,10 @@ class ItemCard extends StatefulWidget {
 class _ItemCardState extends State<ItemCard> {
   final orderRepository = OrderRepository();
   bool isButtonPressed = false;
-  int? tableNumber;
 
   @override
   void initState() {
     super.initState();
-    fetchTableNumber();
-  }
-
-  Future<void> fetchTableNumber() async {
-    final fetchedTableNumber =
-        await orderRepository.getTableByOrderId(widget.orderId);
-    setState(() {
-      tableNumber = fetchedTableNumber;
-    });
   }
 
   @override
@@ -55,7 +47,7 @@ class _ItemCardState extends State<ItemCard> {
                   children: [
                     Text('Table number', style: TextStyle(fontSize: 24)),
                     Text(
-                      tableNumber != null ? 'Table $tableNumber' : 'Loading...',
+                      widget.tableNumber.toString(),
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 28),
                     ),

@@ -61,6 +61,7 @@ class _HomePageState extends State<HomePage> {
                       return ItemCard(
                         orderId: order.orderId,
                         orderDetailsId: order.id,
+                        tableNumber: order.tableNumber,
                         dateTime: order.createdDate,
                         orderedItem:
                             (order.dishName ?? order.comboName).toString(),
