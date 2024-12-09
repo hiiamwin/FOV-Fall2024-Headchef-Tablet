@@ -35,6 +35,7 @@ class OrderEntity {
   final String? dishName;
   final String? comboName;
   final String? note;
+  final String? image;
   final DateTime createdDate;
 
   OrderEntity({
@@ -43,7 +44,8 @@ class OrderEntity {
     required this.tableNumber,
     this.dishName,
     this.comboName,
-    required this.note,
+    this.note,
+    this.image,
     required this.createdDate,
   });
 
@@ -56,6 +58,7 @@ class OrderEntity {
       dishName: json['dishName'],
       comboName: json['comboName'],
       note: json['note'],
+      image: json['image'],
       createdDate: DateTime.parse(json['createdDate']),
     );
   }

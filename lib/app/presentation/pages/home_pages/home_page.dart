@@ -64,6 +64,7 @@ class _HomePageState extends State<HomePage> {
                         tableNumber: order.tableNumber,
                         dateTime: order.createdDate,
                         note: order.note,
+                        image: order.image,
                         orderedItem:
                             (order.dishName ?? order.comboName).toString(),
                       );

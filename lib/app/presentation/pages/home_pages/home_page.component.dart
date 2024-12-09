@@ -9,6 +9,7 @@ class ItemCard extends StatefulWidget {
   final DateTime dateTime;
   final String orderedItem;
   final String? note;
+  final String? image;
 
   ItemCard({
     required this.orderId,
@@ -17,6 +18,7 @@ class ItemCard extends StatefulWidget {
     required this.dateTime,
     required this.orderedItem,
     required this.note,
+    required this.image,
   });
 
   @override
@@ -70,7 +72,7 @@ class _ItemCardState extends State<ItemCard> {
                   width: 150,
                   height: 150,
                   child: Image.network(
-                    'https://fullofplants.com/wp-content/uploads/2022/10/vietnamese-broken-rice-dish-vegan-com-tam-chay-with-pickles-81.jpg',
+                    widget.image.toString(),
                     fit: BoxFit.cover,
                   ),
                 ),
