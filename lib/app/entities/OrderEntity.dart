@@ -34,7 +34,7 @@ class OrderEntity {
   final int tableNumber;
   final String? dishName;
   final String? comboName;
-  final String note;
+  final String? note;
   final DateTime createdDate;
 
   OrderEntity({

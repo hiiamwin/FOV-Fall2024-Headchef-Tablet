@@ -63,6 +63,7 @@ class _HomePageState extends State<HomePage> {
                         orderDetailsId: order.id,
                         tableNumber: order.tableNumber,
                         dateTime: order.createdDate,
+                        note: order.note,
                         orderedItem:
                             (order.dishName ?? order.comboName).toString(),
                       );
@@ -70,22 +71,6 @@ class _HomePageState extends State<HomePage> {
                   );
                 }
               },
-            ),
-          ),
-          Positioned(
-            top: 20,
-            right: 20,
-            child: ElevatedButton.icon(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => RequestIngredientPage(),
-                  ),
-                );
-              },
-              icon: Icon(Icons.add_box),
-              label: Text('Request Ingredient'),
             ),
           ),
         ],
