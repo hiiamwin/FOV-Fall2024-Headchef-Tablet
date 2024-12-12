@@ -12,29 +12,6 @@ class OrderRepository {
 
   Stream<OrderEntityResponse> get orderStream => _ordersController.stream;
 
-  Future<int?> getTableByOrderId(String orderId) async {
-    final url = Uri.parse("$_baseUrl?Id=$orderId");
-
-    try {
-      final response = await http.get(url);
-
-      if (response.statusCode == 200) {
-        final List<dynamic> data = json.decode(response.body);
-
-        if (data.isNotEmpty) {
-          final order = data.first;
-          return order['tableNumber'] as int?;
-        }
-      } else {
-        print("Failed to fetch data: ${response.statusCode}");
-      }
-    } catch (e) {
-      print("Error occurred while fetching table number: $e");
-    }
-
-    return null;
-  }
-
   Future<OrderEntityResponse> fetchOrders() async {
     String? restaurantId = await authRepository.getRestaurantId();
     final url = Uri.parse(

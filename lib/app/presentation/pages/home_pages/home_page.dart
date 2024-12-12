@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:fov_fall2024_headchef_tablet_app/app/entities/OrderEntity.dart';
 import 'package:fov_fall2024_headchef_tablet_app/app/services/signalr_service.dart';
 import 'package:fov_fall2024_headchef_tablet_app/app/repositories/order_repository.dart';
-import 'package:fov_fall2024_headchef_tablet_app/app/presentation/pages/request_ingredient_pages/request_ingredient_page.dart';
 import './home_page.component.dart';
 
 class HomePage extends StatefulWidget {
@@ -24,7 +23,6 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     ordersFuture = orderRepository.fetchOrders();
     widget.signalRService.orderStream.listen((headChefId) {
-      print("Triggering reload due to new order for Head Chef ID: $headChefId");
       _reloadOrders();
     });
   }

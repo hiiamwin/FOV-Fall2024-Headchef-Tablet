@@ -4,6 +4,7 @@ import 'package:signalr_netcore/signalr_client.dart';
 
 class SignalRService {
   static final SignalRService _instance = SignalRService._internal();
+  List<int> customRetryDelays = List.generate(1000, (_) => 2000);
 
   factory SignalRService() {
     return _instance;
@@ -12,8 +13,8 @@ class SignalRService {
   SignalRService._internal() {
     _hubConnection = HubConnectionBuilder()
         .withUrl("http://vktrng.ddns.net:8080/notification-hub")
-        .withAutomaticReconnect(
-            retryDelays: [2000, 5000, 10000, 20000]).build();
+        .withAutomaticReconnect(retryDelays: customRetryDelays)
+        .build();
     _hubConnection.on("ReceiveNewOrder", _handleNewOrder);
   }
 
