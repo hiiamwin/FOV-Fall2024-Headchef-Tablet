@@ -14,15 +14,15 @@ class OrderEntityResponse {
   });
 
   factory OrderEntityResponse.fromJson(Map<String, dynamic> json) {
-    var resultsJson = json['results'] as List;
+    var resultsJson = json['results'] as List<dynamic>? ?? [];
     List<OrderEntity> resultsList =
         resultsJson.map((item) => OrderEntity.fromJson(item)).toList();
 
     return OrderEntityResponse(
-      pageNumber: json['pageNumber'],
-      pageSize: json['pageSize'],
-      totalNumberOfPages: json['totalNumberOfPages'],
-      totalNumberOfRecords: json['totalNumberOfRecords'],
+      pageNumber: json['pageNumber'] ?? 0,
+      pageSize: json['pageSize'] ?? 0,
+      totalNumberOfPages: json['totalNumberOfPages'] ?? 0,
+      totalNumberOfRecords: json['totalNumberOfRecords'] ?? 0,
       results: resultsList,
     );
   }
