@@ -17,13 +17,21 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final orderRepository = OrderRepository();
   late Future<OrderEntityResponse> ordersFuture;
+  bool isReconnecting = false;
 
   @override
   void initState() {
     super.initState();
     ordersFuture = orderRepository.fetchOrders();
+
     widget.signalRService.orderStream.listen((headChefId) {
       _reloadOrders();
+    });
+
+    widget.signalRService.reconnectingStream.listen((isReconnecting) {
+      setState(() {
+        this.isReconnecting = isReconnecting;
+      });
     });
   }
 
@@ -72,6 +80,21 @@ class _HomePageState extends State<HomePage> {
               },
             ),
           ),
+          if (isReconnecting)
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                color: Colors.yellow,
+                padding: EdgeInsets.all(8.0),
+                child: Text(
+                  'Reconnecting...',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
         ],
       ),
     );
