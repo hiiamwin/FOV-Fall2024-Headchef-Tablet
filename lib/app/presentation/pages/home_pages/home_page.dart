@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:fov_fall2024_headchef_tablet_app/app/entities/OrderEntity.dart';
+import 'package:fov_fall2024_headchef_tablet_app/app/entities/restaurant_entity.dart';
 import 'package:fov_fall2024_headchef_tablet_app/app/services/signalr_service.dart';
 import 'package:fov_fall2024_headchef_tablet_app/app/repositories/order_repository.dart';
+import 'package:fov_fall2024_headchef_tablet_app/app/repositories/restaurant_repository.dart';
 import './home_page.component.dart';
 
 class HomePage extends StatefulWidget {
@@ -16,13 +18,19 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final orderRepository = OrderRepository();
+  final restaurantRepository = RestaurantRepository();
+
   late Future<OrderEntityResponse> ordersFuture;
+  late Future<Restaurant> restaurantFuture;
+
   bool isReconnecting = false;
+  late String currentTime;
 
   @override
   void initState() {
     super.initState();
     ordersFuture = orderRepository.fetchOrders();
+    restaurantFuture = restaurantRepository.fetchRestaurantName();
 
     widget.signalRService.orderStream.listen((headChefId) {
       _reloadOrders();
@@ -33,6 +41,21 @@ class _HomePageState extends State<HomePage> {
         this.isReconnecting = isReconnecting;
       });
     });
+
+    // Start a timer to update the clock every second
+    Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        currentTime = _getCurrentTime();
+      });
+    });
+
+    currentTime = _getCurrentTime(); // Initialize current time
+  }
+
+  // Function to get the current time formatted as HH:mm:ss
+  String _getCurrentTime() {
+    final now = DateTime.now();
+    return '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}:${now.second.toString().padLeft(2, '0')}';
   }
 
   void _reloadOrders() {
@@ -95,6 +118,52 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ),
+          // Restaurant Name and Digital Clock at the Top
+          FutureBuilder<Restaurant>(
+            future: restaurantFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Positioned(
+                  top: 40, // Adjust the top position as needed
+                  left: 0,
+                  right: 0,
+                  child: Center(child: CircularProgressIndicator()),
+                );
+              } else if (snapshot.hasError) {
+                return Positioned(
+                  top: 40,
+                  left: 0,
+                  right: 0,
+                  child: Center(child: Text('Error: ${snapshot.error}')),
+                );
+              } else if (snapshot.hasData) {
+                return Positioned(
+                  top: 40, // Adjust the top position as needed
+                  left: 16.0,
+                  right: 16.0,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // Restaurant Name
+                      Text(
+                        snapshot.data!.restaurantName,
+                        style: TextStyle(
+                            fontSize: 24, fontWeight: FontWeight.bold),
+                      ),
+                      // Digital Clock
+                      Text(
+                        currentTime,
+                        style: TextStyle(
+                            fontSize: 24, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                );
+              } else {
+                return SizedBox.shrink(); // No data, so show nothing
+              }
+            },
+          ),
         ],
       ),
     );
