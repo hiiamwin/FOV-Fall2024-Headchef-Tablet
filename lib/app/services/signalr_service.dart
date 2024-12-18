@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:fov_fall2024_headchef_tablet_app/app/repositories/auth_repository.dart';
 import 'package:logger/logger.dart';
 import 'package:signalr_netcore/signalr_client.dart';
 
@@ -32,6 +33,7 @@ class SignalRService {
     _hubConnection.onreconnecting(({error}) {
       print("Reconnecting: \$error");
       _reconnectingController.add(true);
+      autoReconnect();
     });
 
     _hubConnection.onreconnected(({connectionId}) {
@@ -46,6 +48,14 @@ class SignalRService {
     await _hubConnection.start();
     print("Connected to SignalR");
     await _hubConnection.invoke("SendEmployeeId", args: [employeeId, role]);
+  }
+
+  Future<void> autoReconnect() async {
+    final authRepository = AuthRepository();
+    String? employeeId = await authRepository.getEmployeeId();
+    String? role = await authRepository.getRole();
+    List<String?> employeeInfo = [employeeId, role];
+    await _hubConnection.invoke("SendEmployeeId", args: [employeeInfo]);
   }
 
   void _handleNewOrder(List<Object?>? args) {

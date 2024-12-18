@@ -8,6 +8,8 @@ class AuthRepository {
   final StorageService _storageService = StorageService();
   final String _tokenKey = 'auth_token';
   final String _restaurantId = 'restaurantId';
+  final String _employeeId = 'employeeId';
+  final String _role = 'role';
   final signalRService = SignalRService();
 
   ///API related section
@@ -129,11 +131,21 @@ class AuthRepository {
   Future<void> storeUserInfo(Map<String, dynamic> metadata) async {
     await _storageService.write(_tokenKey, metadata['accessToken']);
     await _storageService.write(_restaurantId, metadata['restaurantId']);
+    await _storageService.write(_employeeId, metadata['id']);
+    await _storageService.write(_role, metadata['role']);
   }
 
   // Get token
   Future<String?> getToken() async {
     return await _storageService.read(_tokenKey);
+  }
+
+  Future<String?> getEmployeeId() async {
+    return await _storageService.read(_employeeId);
+  }
+
+  Future<String?> getRole() async {
+    return await _storageService.read(_role);
   }
 
   Future<String?> getRestaurantId() async {
